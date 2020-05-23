@@ -47,10 +47,7 @@ func dbFunc(db *sql.DB) gin.HandlerFunc {
             return
 		}
 
-		db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
-		if err != nil {
-			log.Fatalf("Error opening database: %q", err)
-		}
+		
 	
         defer rows.Close()
         for rows.Next() {
@@ -77,7 +74,12 @@ func main() {
     if err != nil {
         log.Printf("Error converting $REPEAT to an int: %q - Using default\n", err)
         repeat = 5
-    }
+	}
+	
+	db, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+		if err != nil {
+			log.Fatalf("Error opening database: %q", err)
+	}
 
 	router := gin.New()
 	router.Use(gin.Logger())
@@ -90,7 +92,7 @@ func main() {
 
 	router.GET("/mark", func(c *gin.Context) {
 		c.String(http.StatusOK, string(blackfriday.Run([]byte("**hi!**"))))
-	  })
+	})
 	
 	router.GET("/repeat", repeatHandler(repeat))
 	
